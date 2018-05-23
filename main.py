@@ -26,7 +26,6 @@ class reader:
         blocks=[]
         traps=[]
         goals=[]
-        print(x,y,cost,self.data["block"]["0"]["x"])
         for b in self.data["block"]:
             blocks.append([self.data["block"][b]["x"],self.data["block"][b]["y"]])
         for t in self.data["trap"]:
@@ -56,47 +55,13 @@ class gridworld:
             self.arr[t[1]][t[0]]=t[2]
         for g in self.goal:
             self.arr[g[1]][g[0]]=g[2]
+        print("Created ",self.x,"x",self.y,"Gridworld\n")
         
     def printLine(self):
         print("+-----+",end="")
         for w in range(self.x-2):
             print("-----+",end="")
         print("-----+")
-    
-    def printField(self,posY):
-        if(posY==1):
-            posY=0
-        else:
-            posY=posY-2
-        for w in range(self.x):
-            if((self.block[0][0]==w) and (self.block[0][1]==posY)):
-                if(w==0):
-                    print("|  X  |",end="")
-                elif(w==self.x-1):
-                    print("  X  |",end="\n")
-                else:
-                    print("  X  |",end="")
-            elif((self.trap[0][0]==w) and (self.trap[0][1]==posY)):
-                if(w==0):
-                    print("| ",str(self.trap[0][2]),"|",end="")
-                elif(w==self.x-1):
-                    print(" ",str(self.trap[0][2]),"|",end="\n")
-                else:
-                    print(" ",str(self.trap[0][2]),"|",end="")
-            elif((self.goal[0][0]==w) and (self.goal[0][1]==posY)):
-                if(w==0):
-                    print("| ",str(self.goal[0][2]),"|",end="")
-                elif(w==self.x-1):
-                    print(" ",str(self.goal[0][2])," |",end="\n")
-                else:
-                    print(" ",str(self.goal[0][2])," |",end="")
-            else:
-                if(w==0):
-                    print("|     |",end="")
-                elif(w==self.x-1):
-                    print("     |",end="\n")
-                else:
-                    print("     |",end="")
                     
     def printFieldArr(self,posY):
         print("|",end="")
