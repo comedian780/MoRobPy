@@ -4,37 +4,32 @@ Created on Tue May 22 18:25:45 2018
 
 @author: Martin
 """
-
-"""gridworld = ["+---+---+---+---+---+",
-             "|   |   |   |   | +1|",
-             "+---+---+---+---+---+",
-             "|   | X |   |   | -1|",
-             "+---+---+---+---+---+",
-             "|   |   |   |   |   |",
-             "+---+---+---+---+---+",
-             "|   |   |   |   |   |",
-             "+---+---+---+---+---+"]"""
 import json
 
 class reader:
     def __init__(self):
-        file_content  = open("grid4x3.json").read()
+        self.blocks=[]
+        self.traps=[]
+        self.goals=[]
+        
+    def read(self,file):
+        print("Read from file: ",file)
+        file_content  = open(file).read()
         self.data = json.loads(file_content)
-        x=self.data["width"]
-        y=self.data["height"]
-        cost=self.data["cost"]
-        blocks=[]
-        traps=[]
-        goals=[]
+        self.x=self.data["width"]
+        self.y=self.data["height"]
+        self.cost=self.data["cost"]
         for b in self.data["block"]:
-            blocks.append([self.data["block"][b]["x"],self.data["block"][b]["y"]])
+            self.blocks.append([self.data["block"][b]["x"],self.data["block"][b]["y"]])
         for t in self.data["trap"]:
-            traps.append([self.data["trap"][t]["x"],self.data["trap"][t]["y"],self.data["trap"][t]["r"]])
+            self.traps.append([self.data["trap"][t]["x"],self.data["trap"][t]["y"],self.data["trap"][t]["r"]])
         for g in self.data["goal"]:
-            goals.append([self.data["trap"][g]["x"],self.data["trap"][g]["y"],self.data["trap"][g]["r"]])
-        self.world = gridworld(x,y,blocks,traps,goals,cost)
-        self.world.printWorld()
-
+            self.goals.append([self.data["goal"][g]["x"],self.data["goal"][g]["y"],self.data["goal"][g]["r"]])
+        
+    def getGridWorld(self):
+        world = gridworld(self.x,self.y,self.blocks,self.traps,self.goals,self.cost)
+        return world
+        
 class gridworld:
     def __init__(self,_x,_y,_block,_trap,_goal,_cost):
         self.x=_x
@@ -86,7 +81,7 @@ class gridworld:
 world.printWorld()
 world.printArray()"""
 read=reader()
- 
-    
-"""for elem in gridworld:
-    print(elem);"""
+read.read("grid4x3.json")
+world = read.getGridWorld()
+world.printWorld()
+world.printArray()
