@@ -29,6 +29,30 @@ class reader:
     def getGridWorld(self):
         world = gridworld(self.x,self.y,self.blocks,self.traps,self.goals,self.cost)
         return world
+    
+class printer:
+    def printLine(self,width,length):
+        print("+"+str("").center(length,"-")+"+",end="")
+        for w in range(width-2):
+            print(str("").center(length,"-")+"+",end="")
+        print(str("").center(length,"-")+"+")
+        
+    def printField(self,arr,y,length):
+        print("|",end="")
+        for elem in arr[y]:
+            print(str(elem).center(length),end="")
+            print("|",end="")
+        print(end="\n")
+        
+    def printArray(self,array,length):
+        i=0
+        for h in range(len(array)*2+1):
+            if(h%2==1):
+                self.printField(array,i,length)
+                i+=1
+            else:
+                self.printLine(len(array[0]),length)
+        
         
 class gridworld:
     def __init__(self,_x,_y,_block,_trap,_goal,_cost):
@@ -39,6 +63,11 @@ class gridworld:
         self.goal =_goal
         self.cost =_cost
         self.arr = []
+        self.rewArr = self.arr
+        self.gamma = 0.5
+        self.prob_succ = 0.8
+        self.prob_fail = (1-self.prob_succ)/2
+        
         for ay in range(self.y):
             tmp = []
             for ax in range(self.x):
@@ -52,7 +81,7 @@ class gridworld:
             self.arr[g[1]][g[0]]=g[2]
         print("Created ",self.x,"x",self.y,"Gridworld\n")
         
-    def printLine(self):
+    """def printLine(self):
         print("+-----+",end="")
         for w in range(self.x-2):
             print("-----+",end="")
@@ -63,16 +92,56 @@ class gridworld:
         for elem in self.arr[posY]:
             print(str(elem).ljust(5),end="")
             print("|",end="")
-        print(end="\n")
+        print(end="\n")"""
         
     def printWorld(self):
+        self.printer = printer()
+        self.printer.printArray(self.arr,3)
+        
+    def up(self,x,y):
+        if(y==0 or self.arr[y-1][x]=='X'):
+            return self.oldRewArr[y][x]
+        else:
+            return self.oldRewArr[y-1][x]
+        
+    def left(self,x,y):
+        if(x==0 or self.arr[y][x-1]=='X'):
+            return self.oldRewArr[y][x]
+        else:
+            return self.oldRewArr[y][x-1]
+    
+    def down(self,x,y):
+        if(y==(len(self.arr)-1) or self.arr[y+1][x]=='X'):
+            return self.oldRewArr[y][x]
+        else:
+            return self.oldRewArr[y+1][x]
+            
+    def right(self,x,y):
+        if(x==(len(self.arr)-1) or self.arr[y][x+1]=='X'):
+            return self.oldRewArr[y][x]
+        else:
+            return self.oldRewArr[y][x+1]
+        
+    def calcVIStep(self):
+        self.oldRewArr = self.rewArr
+        rew = []
+        for y in self.rewArr:
+            for x in self.rewArr[0]:
+                rew[0] = self.prob_succ*self.up(x,y)+self.prob_fail*self.left(x,y)+self.prob_fail*self.right(x,y)
+                rew[1] = self.prob_succ*self.left(x,y)+self.prob_fail*self.down(x,y)+self.prob_fail*self.up(x,y)
+                rew[2] = self.prob_succ*self.down(x,y)+self.prob_fail*self.right(x,y)+self.prob_fail*self.left(x,y)
+                rew[3] = self.prob_succ*self.right(x,y)+self.prob_fail*self.up(x,y)+self.prob_fail*self.down(x,y)
+                self.rewArr = self.cost + self.gamma+max(rew)
+        
+        
+    """def printWorld(self):
         i=0
         for h in range(self.y*2+1):
             if(h%2==1):
                 self.printFieldArr(i)
                 i+=1
             else:
-                self.printLine()
+                self.printLine()"""
     
     def printArray(self):
         print(self.arr)
