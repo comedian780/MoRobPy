@@ -67,6 +67,7 @@ class gridworld:
         self.gamma = 0.5
         self.prob_succ = 0.8
         self.prob_fail = (1-self.prob_succ)/2
+        self.printer = printer()
         
         for ay in range(self.y):
             tmp = []
@@ -95,8 +96,10 @@ class gridworld:
         print(end="\n")"""
         
     def printWorld(self):
-        self.printer = printer()
         self.printer.printArray(self.arr,3)
+        
+    def printState(self):
+        self.printer.printArray(self.rewArr,5)
         
     def up(self,x,y):
         if(y==0 or self.arr[y-1][x]=='X'):
@@ -133,6 +136,12 @@ class gridworld:
                 rew[3] = self.prob_succ*self.right(x,y)+self.prob_fail*self.up(x,y)+self.prob_fail*self.down(x,y)
                 self.rewArr = self.cost + self.gamma+max(rew)
         
+    def calcVI(self):
+        notKonv = 1
+        while(notKonv):
+            self.calcVIStep()
+            self.printState()
+            
         
     """def printWorld(self):
         i=0
@@ -153,4 +162,4 @@ read=reader()
 read.read("grid4x3.json")
 world = read.getGridWorld()
 world.printWorld()
-world.printArray()
+world.calcVI()
