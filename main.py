@@ -146,13 +146,13 @@ class gridworld:
         rew = []
         for y in range(0,len(self.oldRewArr)):
             for x in range(0,len(self.oldRewArr[0])):
-                print("Position:",x,y,"Inhalt:",self.oldRewArr[y][x])
+                print("Position: ("+str(x)+"|"+str(y)+") Inhalt:",self.oldRewArr[y][x])
                 isTrap=self.isFieldTrap(x,y)
                 isGoal=self.isFieldGoal(x,y)
                 if(self.oldRewArr[y][x]=='X'):
                     print("Block")
                 elif(isTrap>=0):
-                    print("")
+                    print("Trap")
                 elif(isGoal>=0):
                     print("Goal")
                 else:
@@ -164,7 +164,7 @@ class gridworld:
         
     def calcVI(self):
         notKonv = 1
-        while(notKonv<100):
+        while(notKonv<5):
             self.calcVIStep()
             self.printState()
             notKonv+=1
