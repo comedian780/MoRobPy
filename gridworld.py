@@ -4,6 +4,7 @@ Created on Wed May 30 11:18:10 2018
 
 @author: Martin
 """
+import numpy as np
 from printer import printer
 
 class gridworld:
@@ -14,29 +15,34 @@ class gridworld:
         self.trap =_trap
         self.goal =_goal
         self.cost =_cost
-        self.arr = []
-        self.rewArr = []
-        self.ArrowArr = []
-        self.gamma = 0.5
+        self.arr = [[0 for x in range(_x)]for y in range(_y)]
+        self.rewArr = [[0 for x in range(_x)]for y in range(_y)]
+        self.ArrowArr = [[0 for x in range(_x)]for y in range(_y)]
+        self.gamma = 0.9
         self.prob_succ = 0.8
         self.prob_fail = (1-self.prob_succ)/2
         self.printer = printer()
-        
-        for ay in range(self.y):
-            tmp = []
-            for ax in range(self.x):
-                tmp.append(0.0)
-            self.arr.append(tmp)
-            self.rewArr.append(tmp)
-            #self.ArrowArr.append(tmp)
+        self.iter=0
+
         for b in self.block:
             self.arr[b[1]][b[0]]='X'
+            self.ArrowArr[b[1]][b[0]]='X'
+            self.rewArr[b[1]][b[0]]='X'
         for t in self.trap:
             self.arr[t[1]][t[0]]=float(t[2])
+            self.ArrowArr[t[1]][t[0]]=float(t[2])
+            self.rewArr[t[1]][t[0]]=float(t[2])
         for g in self.goal:
             self.arr[g[1]][g[0]]=float(g[2])
-        print("Created ",self.x,"x",self.y,"Gridworld\n")
+            self.ArrowArr[g[1]][g[0]]=float(g[2])
+            self.rewArr[g[1]][g[0]]=float(g[2])
+        print("Created ",self.x,"x",self.y,"Gridworld")
         print("With",len(self.trap),"Traps and",len(self.goal),"Goals")
+        
+    def printInfo(self):
+        print(self.x,"x",self.y,"Gridworld")
+        print("With",len(self.trap),"Traps and",len(self.goal),"Goals")
+        self.printWorld()
         
     """def printLine(self):
         print("+-----+",end="")
@@ -62,25 +68,25 @@ class gridworld:
         
     def up(self,x,y):
         if(y==0 or self.oldRewArr[y-1][x]=='X'):
-            return self.oldRewArr[y][x]
+            return 0
         else:
             return self.oldRewArr[y-1][x]
         
     def left(self,x,y):
         if(x==0 or self.oldRewArr[y][x-1]=='X'):
-            return self.oldRewArr[y][x]
+            return 0
         else:
             return self.oldRewArr[y][x-1]
     
     def down(self,x,y):
         if(y==(len(self.oldRewArr)-1) or self.oldRewArr[y+1][x]=='X'):
-            return self.oldRewArr[y][x]
+            return 0
         else:
             return self.oldRewArr[y+1][x]
             
     def right(self,x,y):
         if(x==(len(self.oldRewArr)-1) or self.oldRewArr[y][x+1]=='X'):
-            return self.oldRewArr[y][x]
+            return 0
         else:
             return self.oldRewArr[y][x+1]
         
@@ -96,32 +102,49 @@ class gridworld:
                 return i
         return -1
     
+    def isSame(self,ar1,ar2):
+        cnt=0
+        for y in range(0,len(ar1)):
+            for x in range(0,len(ar1[0])):
+                print(ar1,ar2)
+                if(type(ar1[y][x])==type("")):
+                    if(ar1[y][x]==ar2[y][x]):
+                        cnt+=1
+                else:
+                    if(abs(ar1[y][x]-ar2[y][x])<0.0001):
+                        cnt+=1
+        print(len(ar1)*len(ar1[0]))
+        print(cnt)
+        if(cnt==len(ar1)*len(ar1[0])):
+            return 1
+        else:
+            return 0
+        
     def calcVIStep(self):
         self.oldRewArr = self.rewArr
         for y in range(0,len(self.oldRewArr)):
             for x in range(0,len(self.oldRewArr[0])):
                 rew=[]
-                print("Position: ("+str(x)+"|"+str(y)+") Inhalt:",self.oldRewArr[y][x])
                 isTrap=self.isFieldTrap(x,y)
                 isGoal=self.isFieldGoal(x,y)
-                if(self.oldRewArr[y][x]=='X'):
+                """if(self.oldRewArr[y][x]=='X'):
                     print("Block")
                 elif(isTrap>=0):
                     print("Trap")
                 elif(isGoal>=0):
                     print("Goal")
-                else:
-                    print(self.up(x,y))
+                else:"""
+                if( self.oldRewArr[y][x]!='X' and isTrap<0 and isGoal<0):
+                    """print(self.up(x,y))
                     print(self.left(x,y))
                     print(self.down(x,y))
-                    print(self.right(x,y))
+                    print(self.right(x,y))"""
                     rew.append(self.prob_succ*self.up(x,y)+self.prob_fail*self.left(x,y)+self.prob_fail*self.right(x,y))
                     rew.append(self.prob_succ*self.left(x,y)+self.prob_fail*self.down(x,y)+self.prob_fail*self.up(x,y))
                     rew.append(self.prob_succ*self.down(x,y)+self.prob_fail*self.right(x,y)+self.prob_fail*self.left(x,y))
                     rew.append(self.prob_succ*self.right(x,y)+self.prob_fail*self.up(x,y)+self.prob_fail*self.down(x,y))
                     self.rewArr[y][x] = self.cost + self.gamma * max(rew)
                     direction = rew.index(max(rew))
-                    #self.ArrowArr.append(direction)
                     if(direction==0):
                         self.ArrowArr[y][x]="up"
                     elif(direction==1):
@@ -130,13 +153,17 @@ class gridworld:
                         self.ArrowArr[y][x]="down"
                     elif(direction==3):
                         self.ArrowArr[y][x]="right"
+        if(self.iter>10):
+            if(self.isSame(self.rewArr,self.oldRewArr)):
+               self.konv=1
+        self.iter+=1
         
     def calcVI(self):
-        notKonv = 1
-        while(notKonv<50):
+        self.konv = 0
+        while(self.konv==0):
             self.calcVIStep()
-            self.printState()
-            notKonv+=1  
+            print("\n",self.iter)
+            self.printState() 
 
     def printArray(self):
         print(self.arr)
