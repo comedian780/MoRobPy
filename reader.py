@@ -14,6 +14,8 @@ class reader:
         self.x=self.data["width"]
         self.y=self.data["height"]
         self.cost=self.data["cost"]
+        self.gamma = self.data["gamma"]
+        self.success = self.data["success"]
         for b in self.data["block"]:
             self.blocks.append([self.data["block"][b]["x"],self.data["block"][b]["y"]])
         for t in self.data["trap"]:
@@ -22,5 +24,5 @@ class reader:
             self.goals.append([self.data["goal"][g]["x"],self.data["goal"][g]["y"],self.data["goal"][g]["r"]])
         
     def getGridWorld(self):
-        world = gridworld(self.x,self.y,self.blocks,self.traps,self.goals,self.cost)
+        world = gridworld(self.x,self.y,self.blocks,self.traps,self.goals,self.cost,self.gamma,self.success)
         return world
