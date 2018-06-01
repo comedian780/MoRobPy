@@ -1,14 +1,15 @@
-#### Value Iteration
+# Value Iteration
 This is a quick and dirty try to implement Value Iteration in a gridworld written in Python
 
-### Classes
+## Classes
 
-## Gridworld
+### Gridworld
 This class is used to create and store the gridworld. It also contains the functions to calculate the Value Iteration
 
-# __init__(self,_x,_y,_block,_trap,_goal,_cost,_gamma,_prob_succ)
-Constructor for the gridworld
+### Printer
+Printer is used to print the gridworld and values to the console
 
-# ...
+### Reader
+Reads in an json-file and creates a gridworld from it
 
 TODO: Doku abschließen

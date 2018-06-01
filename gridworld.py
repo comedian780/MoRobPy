@@ -61,7 +61,7 @@ class gridworld:
         self.printer.printArray(self.arr,5,1)
         
     def printState(self):
-        self.printer.printArray(self.rewardArr,5,2)
+        self.printer.printArray(self.rewardArr,7,4)
     
     def printArrow(self):
         self.printer.printArray(self.ArrowArr,5,2)
@@ -106,7 +106,6 @@ class gridworld:
         cnt=0
         for y in range(0,len(ar1)):
             for x in range(0,len(ar1[0])):
-                #print(ar1,ar2)
                 if(type(ar1[y][x])==type("")):
                     if(ar1[y][x]==ar2[y][x]):
                         cnt+=1
@@ -119,6 +118,15 @@ class gridworld:
             return 1
         else:
             return 0
+    def isSameSum(self,ar1,ar2):
+        sumArr=0
+        for y in range(0,len(ar1)):
+            for x in range(0,len(ar1[0])):
+                if(type(ar1[y][x])!=type("")):
+                    sumArr+=abs(ar1[y][x]-ar2[y][x])
+        if(sumArr<0.00001):
+            self.konv=1
+                
         
     def calcVIStep(self):
         rewardNew = []
@@ -159,7 +167,7 @@ class gridworld:
                         self.ArrowArr[y][x]="right"
         self.rewardArr=rewardNew
         if(self.iter>1):
-            if(self.isSame(self.rewardArr,rewardNew)):
+            if(self.isSameSum(self.rewardArr,rewardNew)):
                self.konv=1
         self.iter+=1
         
