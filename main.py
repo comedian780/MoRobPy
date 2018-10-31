@@ -3,6 +3,8 @@
 Created on Tue May 22 18:25:45 2018
 
 @author: Martin
+
+main function that reads the JSON file before  calculating the robit's path
 """
 from reader import reader
 
